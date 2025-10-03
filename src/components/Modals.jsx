@@ -99,12 +99,13 @@ function NoteModal({ open, onClose, note = null, onSave }) {
                         variant="outlined"
                         value={formData.content}
                         onChange={(e) => setFormData({...formData, content: e.target.value})}
-                        placeholder="Start writing your note..."
                     />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={onClose}>Cancel</Button>
-                    <Button type="submit" variant="contained">Save Note</Button>
+                    <Button type="submit" variant="contained">
+                        {note ? 'Update' : 'Create'}
+                    </Button>
                 </DialogActions>
             </form>
         </Dialog>
@@ -114,28 +115,28 @@ function NoteModal({ open, onClose, note = null, onSave }) {
 // Link Modal Component
 function LinkModal({ open, onClose, link = null, onSave }) {
     const [formData, setFormData] = React.useState({
-        url: '',
         title: '',
+        url: '',
+        category: 'Personal',
         description: '',
-        category: 'Development',
         tags: ''
     });
 
     React.useEffect(() => {
         if (link) {
             setFormData({
-                url: link.url || '',
                 title: link.title || '',
+                url: link.url || '',
+                category: link.category || 'Personal',
                 description: link.description || '',
-                category: link.category || 'Development',
                 tags: (link.tags || []).join(', ')
             });
         } else {
             setFormData({
-                url: '',
                 title: '',
+                url: '',
+                category: 'Personal',
                 description: '',
-                category: 'Development',
                 tags: ''
             });
         }
@@ -150,23 +151,11 @@ function LinkModal({ open, onClose, link = null, onSave }) {
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-            <DialogTitle>{link ? 'Edit Link' : 'Add New Link'}</DialogTitle>
+            <DialogTitle>{link ? 'Edit Link' : 'Create New Link'}</DialogTitle>
             <form onSubmit={handleSubmit}>
                 <DialogContent>
                     <TextField
                         autoFocus
-                        margin="dense"
-                        label="URL"
-                        type="url"
-                        fullWidth
-                        variant="outlined"
-                        value={formData.url}
-                        onChange={(e) => setFormData({...formData, url: e.target.value})}
-                        sx={{ mb: 2 }}
-                        required
-                    />
-
-                    <TextField
                         margin="dense"
                         label="Title"
                         fullWidth
@@ -179,14 +168,14 @@ function LinkModal({ open, onClose, link = null, onSave }) {
 
                     <TextField
                         margin="dense"
-                        label="Description"
+                        label="URL"
                         fullWidth
-                        multiline
-                        rows={3}
                         variant="outlined"
-                        value={formData.description}
-                        onChange={(e) => setFormData({...formData, description: e.target.value})}
+                        value={formData.url}
+                        onChange={(e) => setFormData({...formData, url: e.target.value})}
                         sx={{ mb: 2 }}
+                        required
+                        type="url"
                     />
 
                     <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
@@ -200,79 +189,9 @@ function LinkModal({ open, onClose, link = null, onSave }) {
                             <MenuItem value="Design">Design</MenuItem>
                             <MenuItem value="Business">Business</MenuItem>
                             <MenuItem value="Personal">Personal</MenuItem>
+                            <MenuItem value="Learning">Learning</MenuItem>
                         </Select>
                     </FormControl>
-
-                    <TextField
-                        margin="dense"
-                        label="Tags (comma-separated)"
-                        fullWidth
-                        variant="outlined"
-                        value={formData.tags}
-                        onChange={(e) => setFormData({...formData, tags: e.target.value})}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={onClose}>Cancel</Button>
-                    <Button type="submit" variant="contained">Save Link</Button>
-                </DialogActions>
-            </form>
-        </Dialog>
-    );
-}
-
-// Task Modal Component
-function TaskModal({ open, onClose, task = null, onSave }) {
-    const [formData, setFormData] = React.useState({
-        title: '',
-        description: '',
-        assignee: '',
-        dueDate: '',
-        status: 'todo'
-    });
-
-    React.useEffect(() => {
-        if (task) {
-            setFormData({
-                title: task.title || '',
-                description: task.description || '',
-                assignee: task.assignee || '',
-                dueDate: task.dueDate || '',
-                status: task.status || 'todo'
-            });
-        } else {
-            setFormData({
-                title: '',
-                description: '',
-                assignee: '',
-                dueDate: '',
-                status: 'todo'
-            });
-        }
-    }, [task, open]);
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        await onSave(formData);
-        onClose();
-    };
-
-    return (
-        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle>{task ? 'Edit Task' : 'Create New Task'}</DialogTitle>
-            <form onSubmit={handleSubmit}>
-                <DialogContent>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        label="Task Title"
-                        fullWidth
-                        variant="outlined"
-                        value={formData.title}
-                        onChange={(e) => setFormData({...formData, title: e.target.value})}
-                        sx={{ mb: 2 }}
-                        required
-                    />
 
                     <TextField
                         margin="dense"
@@ -286,34 +205,81 @@ function TaskModal({ open, onClose, task = null, onSave }) {
                         sx={{ mb: 2 }}
                     />
 
-                    <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
-                        <InputLabel>Assignee</InputLabel>
-                        <Select
-                            value={formData.assignee}
-                            label="Assignee"
-                            onChange={(e) => setFormData({...formData, assignee: e.target.value})}
-                        >
-                            <MenuItem value="John">John</MenuItem>
-                            <MenuItem value="Sarah">Sarah</MenuItem>
-                            <MenuItem value="Mike">Mike</MenuItem>
-                            <MenuItem value="Alex">Alex</MenuItem>
-                            <MenuItem value="Emma">Emma</MenuItem>
-                        </Select>
-                    </FormControl>
-
                     <TextField
                         margin="dense"
-                        label="Due Date"
-                        type="date"
+                        label="Tags (comma-separated)"
                         fullWidth
                         variant="outlined"
-                        value={formData.dueDate}
-                        onChange={(e) => setFormData({...formData, dueDate: e.target.value})}
+                        value={formData.tags}
+                        onChange={(e) => setFormData({...formData, tags: e.target.value})}
+                        placeholder="react, javascript, tutorial"
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={onClose}>Cancel</Button>
+                    <Button type="submit" variant="contained">
+                        {link ? 'Update' : 'Create'}
+                    </Button>
+                </DialogActions>
+            </form>
+        </Dialog>
+    );
+}
+
+// Task Modal Component
+function TaskModal({ open, onClose, task = null, onSave }) {
+    const [formData, setFormData] = React.useState({
+        title: '',
+        status: 'todo',
+        assignee: '',
+        description: '',
+        dueDate: ''
+    });
+
+    React.useEffect(() => {
+        if (task) {
+            setFormData({
+                title: task.title || '',
+                status: task.status || 'todo',
+                assignee: task.assignee || '',
+                description: task.description || '',
+                dueDate: task.dueDate || task.due_date || ''
+            });
+        } else {
+            setFormData({
+                title: '',
+                status: 'todo',
+                assignee: '',
+                description: '',
+                dueDate: ''
+            });
+        }
+    }, [task, open]);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        await onSave(formData);
+        onClose();
+    };
+
+    return (
+        <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+            <DialogTitle>{task ? 'Edit Task' : 'Create New Task'}</DialogTitle>
+            <form onSubmit={handleSubmit}>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        label="Title"
+                        fullWidth
+                        variant="outlined"
+                        value={formData.title}
+                        onChange={(e) => setFormData({...formData, title: e.target.value})}
                         sx={{ mb: 2 }}
-                        InputLabelProps={{ shrink: true }}
+                        required
                     />
 
-                    <FormControl fullWidth variant="outlined">
+                    <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
                         <InputLabel>Status</InputLabel>
                         <Select
                             value={formData.status}
@@ -326,10 +292,47 @@ function TaskModal({ open, onClose, task = null, onSave }) {
                             <MenuItem value="completed">Completed</MenuItem>
                         </Select>
                     </FormControl>
+
+                    <TextField
+                        margin="dense"
+                        label="Assignee"
+                        fullWidth
+                        variant="outlined"
+                        value={formData.assignee}
+                        onChange={(e) => setFormData({...formData, assignee: e.target.value})}
+                        sx={{ mb: 2 }}
+                    />
+
+                    <TextField
+                        margin="dense"
+                        label="Description"
+                        fullWidth
+                        multiline
+                        rows={4}
+                        variant="outlined"
+                        value={formData.description}
+                        onChange={(e) => setFormData({...formData, description: e.target.value})}
+                        sx={{ mb: 2 }}
+                    />
+
+                    <TextField
+                        margin="dense"
+                        label="Due Date"
+                        fullWidth
+                        variant="outlined"
+                        type="date"
+                        value={formData.dueDate}
+                        onChange={(e) => setFormData({...formData, dueDate: e.target.value})}
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                    />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={onClose}>Cancel</Button>
-                    <Button type="submit" variant="contained">Save Task</Button>
+                    <Button type="submit" variant="contained">
+                        {task ? 'Update' : 'Create'}
+                    </Button>
                 </DialogActions>
             </form>
         </Dialog>
@@ -342,8 +345,8 @@ function ExpenseModal({ open, onClose, expense = null, onSave }) {
         description: '',
         amount: '',
         category: 'Personal',
-        type: 'expense',
-        date: new Date().toISOString().split('T')[0]
+        date: new Date().toISOString().split('T')[0],
+        type: 'expense'
     });
 
     React.useEffect(() => {
@@ -352,29 +355,33 @@ function ExpenseModal({ open, onClose, expense = null, onSave }) {
                 description: expense.description || '',
                 amount: expense.amount || '',
                 category: expense.category || 'Personal',
-                type: expense.type || 'expense',
-                date: expense.date || new Date().toISOString().split('T')[0]
+                date: expense.date || new Date().toISOString().split('T')[0],
+                type: expense.type || 'expense'
             });
         } else {
             setFormData({
                 description: '',
                 amount: '',
                 category: 'Personal',
-                type: 'expense',
-                date: new Date().toISOString().split('T')[0]
+                date: new Date().toISOString().split('T')[0],
+                type: 'expense'
             });
         }
     }, [expense, open]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await onSave({ ...formData, amount: parseFloat(formData.amount) });
+        const expenseData = {
+            ...formData,
+            amount: parseFloat(formData.amount)
+        };
+        await onSave(expenseData);
         onClose();
     };
 
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle>{expense ? 'Edit Transaction' : 'Add Transaction'}</DialogTitle>
+        <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+            <DialogTitle>{expense ? 'Edit Expense' : 'Create New Expense'}</DialogTitle>
             <form onSubmit={handleSubmit}>
                 <DialogContent>
                     <TextField
@@ -392,14 +399,17 @@ function ExpenseModal({ open, onClose, expense = null, onSave }) {
                     <TextField
                         margin="dense"
                         label="Amount"
-                        type="number"
                         fullWidth
                         variant="outlined"
+                        type="number"
+                        step="0.01"
                         value={formData.amount}
                         onChange={(e) => setFormData({...formData, amount: e.target.value})}
                         sx={{ mb: 2 }}
-                        inputProps={{ step: 0.01 }}
                         required
+                        InputProps={{
+                            startAdornment: <span style={{ marginRight: '8px' }}>$</span>
+                        }}
                     />
 
                     <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
@@ -409,15 +419,32 @@ function ExpenseModal({ open, onClose, expense = null, onSave }) {
                             label="Category"
                             onChange={(e) => setFormData({...formData, category: e.target.value})}
                         >
-                            <MenuItem value="Business">Business</MenuItem>
-                            <MenuItem value="Personal">Personal</MenuItem>
                             <MenuItem value="Food">Food</MenuItem>
                             <MenuItem value="Transportation">Transportation</MenuItem>
-                            <MenuItem value="Income">Income</MenuItem>
+                            <MenuItem value="Entertainment">Entertainment</MenuItem>
+                            <MenuItem value="Health">Health</MenuItem>
+                            <MenuItem value="Shopping">Shopping</MenuItem>
+                            <MenuItem value="Bills">Bills</MenuItem>
+                            <MenuItem value="Personal">Personal</MenuItem>
+                            <MenuItem value="Business">Business</MenuItem>
                         </Select>
                     </FormControl>
 
-                    <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
+                    <TextField
+                        margin="dense"
+                        label="Date"
+                        fullWidth
+                        variant="outlined"
+                        type="date"
+                        value={formData.date}
+                        onChange={(e) => setFormData({...formData, date: e.target.value})}
+                        sx={{ mb: 2 }}
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                    />
+
+                    <FormControl fullWidth variant="outlined">
                         <InputLabel>Type</InputLabel>
                         <Select
                             value={formData.type}
@@ -428,68 +455,29 @@ function ExpenseModal({ open, onClose, expense = null, onSave }) {
                             <MenuItem value="income">Income</MenuItem>
                         </Select>
                     </FormControl>
-
-                    <TextField
-                        margin="dense"
-                        label="Date"
-                        type="date"
-                        fullWidth
-                        variant="outlined"
-                        value={formData.date}
-                        onChange={(e) => setFormData({...formData, date: e.target.value})}
-                        InputLabelProps={{ shrink: true }}
-                        required
-                    />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={onClose}>Cancel</Button>
-                    <Button type="submit" variant="contained">Save Transaction</Button>
+                    <Button type="submit" variant="contained">
+                        {expense ? 'Update' : 'Create'}
+                    </Button>
                 </DialogActions>
             </form>
         </Dialog>
     );
 }
 
-// Confirmation Dialog Component
-function ConfirmDialog({ open, onClose, message, onConfirm }) {
-    const handleConfirm = () => {
-        onConfirm();
-        onClose();
-    };
+// Export all modals as a single object
+const Modals = {
+    NoteModal,
+    LinkModal,
+    TaskModal,
+    ExpenseModal
+};
 
-    return (
-        <Dialog open={open} onClose={onClose} maxWidth="sm">
-            <DialogTitle>Confirm Action</DialogTitle>
-            <DialogContent>
-                <Typography>{message}</Typography>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={onClose}>Cancel</Button>
-                <Button onClick={handleConfirm} variant="contained" color="error">Confirm</Button>
-            </DialogActions>
-        </Dialog>
-    );
+// For backwards compatibility with existing code
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = Modals;
+} else if (typeof window !== 'undefined') {
+    window.Modals = Modals;
 }
-
-// Toast Component
-function ToastNotification({ open, message, severity, onClose }) {
-    return (
-        <Snackbar
-            open={open}
-            autoHideDuration={5000}
-            onClose={onClose}
-            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        >
-            <Alert onClose={onClose} severity={severity} sx={{ width: '100%' }}>
-                {message}
-            </Alert>
-        </Snackbar>
-    );
-}
-
-window.NoteModal = NoteModal;
-window.LinkModal = LinkModal;
-window.TaskModal = TaskModal;
-window.ExpenseModal = ExpenseModal;
-window.ConfirmDialog = ConfirmDialog;
-window.ToastNotification = ToastNotification;

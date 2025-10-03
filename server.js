@@ -32,6 +32,15 @@ pool.on('error', (err) => {
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Configure MIME types for JSX files
+app.use((req, res, next) => {
+    if (req.url.endsWith('.jsx')) {
+        res.setHeader('Content-Type', 'application/javascript');
+    }
+    next();
+});
+
 app.use(express.static(path.join(__dirname)));
 
 // Database initialization
@@ -293,41 +302,30 @@ app.delete('/api/expenses/:id', async (req, res) => {
     }
 });
 
-// Server now serves index.html directly (no duplicates)
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
+// Serve static files
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Serve static files from src directory
-app.use('/src', express.static(path.join(__dirname, 'src')));
-
-// Start server with retry on EADDRINUSE
-async function startServer(port, maxRetries = 3) {
-    const server = app.listen(port, async () => {
-        console.log(`Server running on http://localhost:${port}`);
+// Start server
+async function startServer() {
+    try {
         await initDatabase();
-    });
-
-    server.on('error', async (err) => {
-        if (err.code === 'EADDRINUSE') {
-            console.error(`Port ${port} is already in use.`);
-            if (maxRetries > 0) {
-                const nextPort = Number(port) + 1;
-                console.log(`Trying port ${nextPort}... (${maxRetries} retries left)`);
-                setTimeout(() => startServer(nextPort, maxRetries - 1), 500);
-            } else {
-                console.error('No available ports found. Exiting.');
-                process.exit(1);
-            }
-        } else {
-            console.error('Server error:', err);
-            process.exit(1);
-        }
-    });
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+            console.log(`Database tables initialized and server ready`);
+        });
+    } catch (error) {
+        console.error('Failed to start server:', error);
+        process.exit(1);
+    }
 }
 
-// Use environment port or default, then start with retries
-const desiredPort = parseInt(process.env.PORT, 10) || PORT;
-startServer(desiredPort);
+startServer();
 
 module.exports = app;

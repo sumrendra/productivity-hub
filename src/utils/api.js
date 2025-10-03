@@ -270,5 +270,6 @@ class ApiService {
     }
 }
 
-// Export for global use
-window.ApiService = ApiService;
+// Create a singleton instance
+const apiService = new ApiService();
+export default apiService;

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+</head>
+<body>
+    <h1>API Test</h1>
+    <div id="results"></div>
+    
+    <script>
+        async function testAPI() {
+            const results = document.getElementById('results');
+            
+            try {
+                // Test Notes API
+                const notesResponse = await fetch('/api/notes');
+                const notes = await notesResponse.json();
+                results.innerHTML += `<p>Notes: ${notes.length} items</p>`;
+                
+                // Test Links API
+                const linksResponse = await fetch('/api/links');
+                const links = await linksResponse.json();
+                results.innerHTML += `<p>Links: ${links.length} items</p>`;
+                
+                // Test Tasks API
+                const tasksResponse = await fetch('/api/tasks');
+                const tasks = await tasksResponse.json();
+                results.innerHTML += `<p>Tasks: ${tasks.length} items</p>`;
+                
+                // Test Expenses API
+                const expensesResponse = await fetch('/api/expenses');
+                const expenses = await expensesResponse.json();
+                results.innerHTML += `<p>Expenses: ${expenses.length} items</p>`;
+                
+                results.innerHTML += '<p style="color: green;">All API tests passed!</p>';
+                
+            } catch (error) {
+                results.innerHTML += `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+        
+        testAPI();
+    </script>
+</body>
+</html>
