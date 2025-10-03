@@ -47,3 +47,6 @@ export type { BreadcrumbsProps, BreadcrumbItem } from './Breadcrumbs';
 // Menu
 export { Menu } from './Menu';
 export type { MenuProps, MenuItem } from './Menu';
+
+// Save Status Indicator
+export { default as SaveStatusIndicator } from './SaveStatusIndicator';
