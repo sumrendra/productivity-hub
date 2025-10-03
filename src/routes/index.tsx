@@ -10,6 +10,7 @@ const NotesPage = lazy(() => import('@pages/NotesPage'));
 const LinksPage = lazy(() => import('@pages/LinksPage'));
 const TasksPage = lazy(() => import('@pages/TasksPage'));
 const FinancePage = lazy(() => import('@pages/FinancePage'));
+const SettingsPage = lazy(() => import('@pages/SettingsPage'));
 const NotFoundPage = lazy(() => import('@pages/NotFoundPage'));
 
 // Loading component
@@ -84,6 +85,14 @@ export const router = createBrowserRouter([
         element: (
           <SuspenseWrapper>
             <FinancePage />
+          </SuspenseWrapper>
+        ),
+      },
+      {
+        path: 'settings',
+        element: (
+          <SuspenseWrapper>
+            <SettingsPage />
           </SuspenseWrapper>
         ),
       },
