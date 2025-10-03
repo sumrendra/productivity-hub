@@ -33,15 +33,18 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Configure MIME types for JSX files
-app.use((req, res, next) => {
-    if (req.url.endsWith('.jsx')) {
-        res.setHeader('Content-Type', 'application/javascript');
-    }
-    next();
-});
-
-app.use(express.static(path.join(__dirname)));
+// Serve static files only in production mode
+if (process.env.NODE_ENV === 'production') {
+    // Configure MIME types for JSX files
+    app.use((req, res, next) => {
+        if (req.url.endsWith('.jsx')) {
+            res.setHeader('Content-Type', 'application/javascript');
+        }
+        next();
+    });
+    
+    app.use(express.static(path.join(__dirname, 'dist')));
+}
 
 // Database initialization
 async function initDatabase() {
@@ -307,10 +310,29 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Serve static files
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
+// Serve static files in production only
+if (process.env.NODE_ENV === 'production') {
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+    });
+} else {
+    // In development, just show API status
+    app.get('/', (req, res) => {
+        res.json({ 
+            message: 'ProductivePro API Server',
+            status: 'running',
+            environment: 'development',
+            frontend: 'http://localhost:3001',
+            apiEndpoints: [
+                'GET /api/health',
+                'GET /api/notes',
+                'GET /api/links',
+                'GET /api/tasks',
+                'GET /api/expenses'
+            ]
+        });
+    });
+}
 
 // Start server
 async function startServer() {
