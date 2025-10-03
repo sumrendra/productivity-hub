@@ -35,3 +35,15 @@ export type { ModalProps, ModalHeaderProps, ModalBodyProps, ModalFooterProps } f
 // Tabs
 export { Tabs, TabList, Tab, TabPanels, TabPanel } from './Tabs';
 export type { TabsProps, TabListProps, TabProps, TabPanelsProps, TabPanelProps } from './Tabs';
+
+// Tooltip
+export { Tooltip } from './Tooltip';
+export type { TooltipProps, TooltipPlacement } from './Tooltip';
+
+// Breadcrumbs
+export { Breadcrumbs } from './Breadcrumbs';
+export type { BreadcrumbsProps, BreadcrumbItem } from './Breadcrumbs';
+
+// Menu
+export { Menu } from './Menu';
+export type { MenuProps, MenuItem } from './Menu';
