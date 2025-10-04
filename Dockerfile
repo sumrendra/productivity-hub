@@ -12,8 +12,14 @@ RUN npm ci --include=dev
 # Copy all project files (respecting .dockerignore)
 COPY . .
 
-# Build frontend with Vite only (TypeScript checking happens in Vite)
-RUN npx vite build
+# Build frontend with production Vite config (skip test plugins)
+# Use production config and show output for debugging
+RUN npx vite build --config vite.config.prod.ts --mode production || \
+    (echo "Build failed. Checking for common issues..." && \
+     ls -la && \
+     echo "Node version:" && node --version && \
+     echo "NPM version:" && npm --version && \
+     exit 1)
 
 # Production stage
 FROM node:20-alpine
