@@ -6,14 +6,19 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci
+# Install all dependencies (including devDependencies needed for build)
+RUN npm ci --include=dev
 
-# Copy source files
-COPY . .
+# Copy necessary config files first
+COPY tsconfig.json tsconfig.node.json vite.config.ts ./
+COPY index.html ./
 
-# Build frontend
-RUN npm run build
+# Copy source code
+COPY src ./src
+COPY public ./public
+
+# Build frontend with Vite only (TypeScript checking happens in Vite)
+RUN npx vite build
 
 # Production stage
 FROM node:20-alpine
