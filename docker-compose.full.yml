@@ -1,0 +1,61 @@
+version: '3.8'
+
+# FULL STACK VERSION - Includes PostgreSQL Database
+# Use this if you want a self-contained deployment with its own database
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: productivity-hub-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-productivity-hub}
+      POSTGRES_USER: ${DB_USER:-admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-epaps0991g}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - productivity-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-admin} -d ${DB_NAME:-productivity-hub}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Node.js Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: productivity-hub-app
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: ${PORT:-3070}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-productivity-hub}
+      DB_USER: ${DB_USER:-admin}
+      DB_PASSWORD: ${DB_PASSWORD:-epaps0991g}
+    ports:
+      - "${PORT:-3070}:3070"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - productivity-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3070/api/notes', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); }).on('error', () => { process.exit(1); });"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  productivity-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
