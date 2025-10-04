@@ -9,13 +9,8 @@ COPY package*.json ./
 # Install all dependencies (including devDependencies needed for build)
 RUN npm ci --include=dev
 
-# Copy necessary config files first
-COPY tsconfig.json tsconfig.node.json vite.config.ts ./
-COPY index.html ./
-
-# Copy source code
-COPY src ./src
-COPY public ./public
+# Copy all project files (respecting .dockerignore)
+COPY . .
 
 # Build frontend with Vite only (TypeScript checking happens in Vite)
 RUN npx vite build
