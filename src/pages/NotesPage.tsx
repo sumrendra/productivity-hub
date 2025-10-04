@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Box, Grid, Heading, Text, Flex, Stack, Input as ChakraInput } from '@chakra-ui/react';
 import {
   Plus,
@@ -34,7 +34,9 @@ import {
   Alert,
   Tooltip,
   Menu,
+  SaveStatusIndicator,
 } from '@components/common';
+import { useAutoSave } from '@hooks/useAutoSave';
 import type { Note } from '@/types';
 
 // Note templates
@@ -151,6 +153,20 @@ const NotesPage = () => {
   const [tagInput, setTagInput] = useState('');
   const [error, setError] = useState('');
   const [showTemplates, setShowTemplates] = useState(false);
+
+  // Auto-save hook for edit mode
+  const { status: saveStatus, lastSaved, hasUnsavedChanges } = useAutoSave({
+    data: formData,
+    onSave: useCallback(async (data: typeof formData) => {
+      if (isEditModalOpen && selectedNote) {
+        await notesApi.update(selectedNote.id, data);
+        const updatedNote = { ...selectedNote, ...data };
+        setNotes(notes.map((n) => (n.id === selectedNote.id ? updatedNote : n)));
+      }
+    }, [isEditModalOpen, selectedNote, notes, setNotes]),
+    delay: 2000,
+    enabled: isEditModalOpen && !!selectedNote && formData.title.trim() !== '',
+  });
 
   useEffect(() => {
     loadNotes();
@@ -654,6 +670,17 @@ const NotesPage = () => {
       >
         <ModalBody>
           <Stack gap={4}>
+            {/* Save Status for Edit Mode */}
+            {isEditModalOpen && (
+              <Flex justify="flex-end">
+                <SaveStatusIndicator
+                  status={saveStatus}
+                  lastSaved={lastSaved}
+                  hasUnsavedChanges={hasUnsavedChanges}
+                />
+              </Flex>
+            )}
+            
             {error && (
               <Alert variant="error" closable onClose={() => setError('')}>
                 {error}
@@ -711,13 +738,23 @@ const NotesPage = () => {
               required
             />
 
-            <Textarea
-              label="Content"
-              placeholder="Write your note content here..."
-              value={formData.content}
-              onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-              rows={12}
-            />
+            <Box>
+              <Flex justify="space-between" align="center" mb={2}>
+                <Text fontSize="sm" fontWeight="medium">
+                  Content
+                </Text>
+                <Text fontSize="xs" color="gray.500">
+                  {formData.content.length} characters • {formData.content.split(/\s+/).filter(Boolean).length} words
+                  {formData.content.length > 0 && ` • ${Math.ceil(formData.content.split(/\s+/).filter(Boolean).length / 200)} min read`}
+                </Text>
+              </Flex>
+              <Textarea
+                placeholder="Write your note content here..."
+                value={formData.content}
+                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                rows={12}
+              />
+            </Box>
 
             <Box>
               <Text fontSize="sm" fontWeight="medium" mb={2}>
