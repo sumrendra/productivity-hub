@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+*.log
+.DS_Store
+db/migrations/*.sql
+tsconfig.tsbuildinfo
+.claude/
+FLOWSPACE_BUILD_SPEC.md
+CLAUDE_CODE_HANDOFF.md

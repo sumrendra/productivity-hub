@@ -1,0 +1,59 @@
+@import "tailwindcss";
+@import "@fontsource-variable/geist";
+@import "./tokens.css";
+@import "./components.css";
+
+@theme {
+  --font-sans: "Geist Variable", "Geist", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  height: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  height: 100%;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+}
+
+#root {
+  height: 100%;
+  min-height: 100dvh;
+}
+
+::selection {
+  background: var(--accent-muted);
+}
+
+:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+code, pre, kbd {
+  font-family: var(--font-mono);
+}
+
+/* BlockNote */
+.bn-container { font-family: var(--font-sans) !important; }
+.bn-editor { color: var(--text-primary) !important; }
