@@ -15,7 +15,7 @@ Database and app URL defaults are in `docker-compose.yml` (labz-server / `produc
 
 Optional overrides: `DB_PASSWORD`, `APP_URL`, `BETTER_AUTH_URL`, `DB_HOST`, etc.
 
-1. Pull and redeploy the stack in Portainer.
+1. Pull and redeploy the stack in Portainer (builds from Dockerfile on the server — no registry pull).
 2. Open `http://192.168.1.4:3070`, register the first account (inherits existing workspace data).
 
 Health check: `GET /api/health`

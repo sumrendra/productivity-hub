@@ -1,7 +1,9 @@
 version: '3.8'
 services:
   flowspace:
+    image: flowspace:local
     build: .
+    pull_policy: build
     restart: unless-stopped
     ports:
       - '3070:3070'
