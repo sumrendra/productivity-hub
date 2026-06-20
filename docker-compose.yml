@@ -4,18 +4,26 @@ services:
     build: .
     restart: unless-stopped
     ports:
-      - "3070:3070"
-    env_file:
-      - .env
+      - '3070:3070'
     environment:
       NODE_ENV: production
       PORT: 3070
+      APP_URL: ${APP_URL:-http://192.168.1.4:3070}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://192.168.1.4:3070}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      ENABLE_SIGNUP: ${ENABLE_SIGNUP:-true}
+      DB_HOST: ${DB_HOST:-192.168.1.4}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME:-productivity-hub}
+      DB_USER: ${DB_USER:-admin}
+      DB_PASSWORD: ${DB_PASSWORD:-epaps0991g}
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - 'host.docker.internal:host-gateway'
     healthcheck:
       test:
         [
-          "CMD-SHELL",
+          'CMD-SHELL',
           "node -e \"fetch('http://127.0.0.1:3070/api/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\"",
         ]
       interval: 30s

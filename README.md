@@ -4,18 +4,18 @@ Self-hosted AI productivity workspace: notes, tasks, links, finance, and assista
 
 ## Deploy on Portainer (labz-server)
 
-1. Clone or pull this repo on the server.
-2. Copy `.env.example` to `.env` and set:
-   - `DB_PASSWORD`
-   - `BETTER_AUTH_SECRET` (`openssl rand -base64 32`)
-   - `GEMINI_API_KEY`
-   - `APP_URL` and `BETTER_AUTH_URL` to your public URL (e.g. `http://192.168.1.4:3070`)
-3. From the stack directory:
+Database and app URL defaults are in `docker-compose.yml` (labz-server / `productivity-hub` DB).
 
-```bash
-docker compose up -d --build
-```
+**Set only these in Portainer stack environment variables:**
 
-4. Open the app URL, register the first account (claims existing workspace data), then sign in.
+| Variable | Notes |
+|----------|--------|
+| `BETTER_AUTH_SECRET` | Output of `openssl rand -base64 32` |
+| `GEMINI_API_KEY` | Google AI Studio key |
+
+Optional overrides: `DB_PASSWORD`, `APP_URL`, `BETTER_AUTH_URL`, `DB_HOST`, etc.
+
+1. Pull and redeploy the stack in Portainer.
+2. Open `http://192.168.1.4:3070`, register the first account (inherits existing workspace data).
 
 Health check: `GET /api/health`
